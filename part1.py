@@ -1,27 +1,36 @@
+#Assignment5 (part 2)
 #Amir Al Kowshik
-#Final Assignment
-#Machine learning for prediction
+#Data analysis
+#22 Feb. '21
 
-import random
-from sklearn.linear_model import LinearRegression
+import csv
 
-training_set = []
-result_set = []
+with open('vaccinations.csv') as csv_file:
+	csv_reader = csv.DictReader(csv_file)
+	
+	# save the csv
+	saved_csv = []
+	for row in csv_reader:
+		saved_csv.append(row)
 
-for i in range(100):
-    x = random.randint(1,999)
-    y = random.randint(1,999)
-    z = random.randint(1,999)
+	# get a list of all countries from the saved csv file
+	all_countries = []
+	for row in saved_csv:	
+		all_countries.append(row['location'])
 
-    training_set.append([x,y,z])
-    result_set.append(x*1 + y*2 + z*3)
+	# get a set of all countries (set contains only one instance of each item)
+	all_countries = set(all_countries)
 
-predictor = LinearRegression(n_jobs=1)
-predictor.fit(X=training_set, y=result_set)
+	final_dictionary = {}
 
-test_input = [[10,20,30]]
-result = predictor.predict(X=test_input)
-coefficients = predictor.coef_
+	for country in all_countries:
+		# in each country, looping over all rows about that country
+		percentages = []
+		for row in saved_csv:
+			if row['location'] == country and row['total_vaccinations_per_hundred'] != "" and float(row['total_vaccinations_per_hundred']) != 0.0:
 
-print("Prediction: "+str(result))
-print("Coefficients: "+str(coefficients))
+				# when we are in a row of the specific country, get the percentage
+				percentage = (float(row['total_vaccinations_per_hundred']))
+				final_dictionary[country.upper()] = "{:.1f}".format(percentage)
+
+	print(final_dictionary)
